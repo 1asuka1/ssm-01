@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gxa.mapper.EmpMapper">
+<!--    <resultMap id="empResultMap" type="com.gxa.entity.Emp">-->
+<!--        <id property="id" column="emp_id"></id>-->
+<!--        <result property="name" column="emp_name"></result>-->
+<!--        <result property="gender" column="gender"></result>-->
+<!--        <result property="status" column="status"></result>-->
+<!--        <result property="dept.id" column="dept_id"></result>-->
+<!--        <result property="dept.name" column="dept_name"></result>-->
+<!--    </resultMap>-->
+<!--    多表结果集映射-->
+    <resultMap id ="empResultMap" type="com.gxa.entity.Emp">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="gender" column="gender"></result>
+        <result property="status" column="status"></result>
+        <result property="dept.id" column="dept_id"></result>
+        <result property="dept.name" column="dept_name"></result>
+    </resultMap>
+<!--    添加新的员工-->
+    <insert id="insertEmp" parameterType="com.gxa.entity.Emp">
+        insert into t_emp(name,gender,dept_id,status)
+        value(#{name},#{gender},#{dept.id},#{status})
+    </insert>
+<!--    修改-->
+    <update id="update" parameterType="com.gxa.entity.Emp">
+       update t_emp
+        SET name=#{name},gender=#{gender},status=#{status},dept_id=#{dept.id}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from t_emp
+        where id=#{id}
+    </delete>
+    <!--    <insert id="insert" parameterType="com.gxa.entity.Emp">-->
+<!--        INSERT INTO t_emp(name,gender,dept_id,status)-->
+<!--        VALUE(#{name},#{gender},#{dept.id},#{status})-->
+<!--    </insert>-->
+
+
+<!--    <select id="queryAll" resultMap="empResultMap">-->
+<!--        SELECT e.id as emp_id,e.name as emp_name,e.gender,e.status,d.id as dept_id,d.name as dept_name-->
+<!--        FROM t_emp e,t_dept d-->
+<!--        WHERE e.dept_id=d.id-->
+<!--    </select>-->
+<!--    多表查询获取所有员工-->
+    <select id="queryAllEmp" resultMap="empResultMap">
+        select t_emp.id,t_emp.name,t_emp.gender,t_emp.status,t_dept.id as dept_id,t_dept.name as dept_name
+        from t_emp,t_dept
+        where t_emp.dept_id = t_dept.id
+    </select>
+<!-- 根据员工id获取员工-->
+    <select id="queryById" resultMap="empResultMap" parameterType="java.lang.Integer">
+        select t_emp.id,t_emp.name,t_emp.gender,t_emp.status,t_dept.id as dept_id,t_dept.name as dept_name
+        from t_emp,t_dept
+        where t_emp.dept_id = t_dept.id and t_emp.id = #{id};
+
+    </select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--配置了生命周期的后置处理器，作用是调用IOC容器中的shiro bean的生命周期方法-->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+<!--    &lt;!&ndash;启用了IOC容器中使用shiro的注解，但必须在配置了LifecycleBeanPostProcessor之后才能使用 &ndash;&gt;-->
+<!--    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"-->
+<!--          depends-on="lifecycleBeanPostProcessor"/>-->
+    <!--    配置加密匹配器-->
+    <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+<!--        指定加密方式-->
+        <property name="hashAlgorithmName" value="MD5"></property>
+<!--        指定迭代次数-->
+        <property name="hashIterations" value="1024"></property>
+    </bean>
+    <!--配置realm-->
+    <bean id="userRealm" class="com.gxa.realm.UserRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"></property>
+    </bean>
+    <!--    配置securityManager-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="userRealm"></property>
+    </bean>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+<!--  配置shiro的拦截规则-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"></property>
+        <!--  告诉shiro登录地址，如果没有认证，则跳转到登陆地址-->
+        <property name="loginUrl" value="/index.html"></property>
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"></property>
+<!--    配置拦截哪些资源-->
+        <property name="filterChainDefinitions">
+            <value>
+                <!--anon代表匿名访问-->
+                /index.html=anon
+                /asserts/**=anon
+                <!--/login登录请求-->
+                /login=anon
+                /logout=logout
+                <!--authc代表需要登录-->
+                /**=authc
+            </value>
+        </property>
+    </bean>
+
+</beans>

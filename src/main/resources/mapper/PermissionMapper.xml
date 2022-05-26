@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gxa.mapper.PermissionMapper">
+
+    <select id="queryPermissionByName" parameterType="string" resultType="java.lang.String">
+        select p.per
+        from t_user u ,t_role r ,t_permission p,t_user_role tr,t_role_permission tp
+        where u.id=tr.user_id and r.id=tr.role_id and r.id= tp.role_id and p.id = tp.perm_id and u.name=#{name}
+    </select>
+</mapper>
